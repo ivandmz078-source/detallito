@@ -3,136 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#100b1f" />
-    <meta name="description" content="Un pequeño universo hecho para Yamileth." />
-    <title>Para Yamileth ✦</title>
+    <meta name="theme-color" content="#071427" />
+    <meta name="description" content="Un universo hecho para Yami." />
+    <title>Para Yami · Un universo hecho para ti</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="sky" aria-hidden="true">
-      <span class="moon"></span>
-      <span class="glow glow-one"></span><span class="glow glow-two"></span>
-      <div class="stars" id="stars"></div>
-      <div class="floating-hearts" id="floatingHearts"></div>
-    </div>
-
-    <div class="entry-screen" id="entryScreen" role="dialog" aria-modal="true" aria-labelledby="entryTitle">
-      <div class="entry-orbit" aria-hidden="true"><i></i><b>♥</b></div>
-      <p class="eyebrow">un detallito, a las 3:00 a. m.</p>
-      <h1 id="entryTitle">Hay cosas que solo quería<br /><em>dejarte aquí.</em></h1>
-      <p class="entry-copy">Una carta, unas luces y un pequeño universo para ti, Yamileth.</p>
-      <button class="button button-primary" id="enterButton" type="button">Entrar <span aria-hidden="true">↗</span></button>
-      <p class="entry-note" id="entryNote">Toca para abrirlo</p>
-    </div>
-
-    <main id="pageContent" aria-hidden="true">
-      <header class="site-header">
-        <a class="wordmark" href="#inicio" aria-label="Ir al inicio">Y<span>♥</span></a>
-        <nav aria-label="Navegación principal">
-          <a href="#carta">La carta</a>
-          <a href="#universo">Nuestro universo</a>
-        </nav>
-        <div class="sound-control" id="soundControl" hidden>
-          <button class="sound-button" id="soundButton" type="button" aria-label="Pausar música" title="Pausar música">♫</button>
-          <button class="mute-button" id="muteButton" type="button" aria-label="Silenciar música" title="Silenciar música">◌</button>
-        </div>
-      </header>
-
-      <section class="hero" id="inicio" aria-labelledby="heroTitle">
-        <div class="hero-copy reveal">
-          <p class="eyebrow">PARA YAMILETH</p>
-          <h1 id="heroTitle">Un lugarcito<br />solo <em>para ti.</em></h1>
-          <p class="hero-text">Porque a veces las palabras necesitan un poco de luz alrededor para decir lo que sienten.</p>
-          <a class="button button-outline" href="#carta">Abrir la carta <span aria-hidden="true">↓</span></a>
-        </div>
-        <div class="heart-stage reveal" aria-label="Un corazón luminoso flotando entre estrellas">
-          <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
-          <div class="core-heart"><span>♥</span></div>
-          <span class="stage-dot dot-one"></span><span class="stage-dot dot-two"></span><span class="stage-dot dot-three"></span>
-          <p>una constelación<br />con tu nombre</p>
-        </div>
-        <a class="scroll-cue" href="#carta" aria-label="Desplazarse a la carta"><span></span>desliza</a>
-      </section>
-
-      <section class="letter-section" id="carta" aria-labelledby="letterTitle">
-        <div class="section-marker reveal"><span>01</span><i></i><p>LA CARTA</p></div>
-        <div class="letter-layout">
-          <div class="letter-intro reveal">
-            <p class="eyebrow">PALABRAS QUE SON TUYAS</p>
-            <h2 id="letterTitle">Para leer<br />despacito.</h2>
-            <p>Este espacio es para que pongas tus propias palabras. No hay nada más bonito que algo que sale directo de ti.</p>
-            <button class="tiny-heart" id="sparkButton" type="button" aria-label="Encender una lluvia de corazones"><span>♥</span> encender una luz</button>
-          </div>
-          <article class="letter-card reveal">
-            <span class="paper-pin" aria-hidden="true">✦</span>
-            <p class="letter-greeting">Yamileth,</p>
-            <div class="letter-placeholder" contenteditable="true" role="textbox" aria-label="Escribe aquí tu carta para Yamileth" data-placeholder="Escribe aquí tu carta…&#10;&#10;Este espacio queda listo para que pongas lo que de verdad quieres decirle."></div>
-            <p class="letter-signature">con cariño, <span>tu persona</span></p>
-            <p class="edit-hint">Puedes tocar el texto y hacerlo completamente tuyo.</p>
-          </article>
-        </div>
-      </section>
-
-      <section class="universe-section" id="universo" aria-labelledby="universeTitle">
-        <div class="section-marker reveal"><span>02</span><i></i><p>UN UNIVERSO PEQUEÑO</p></div>
-        <div class="universe-heading reveal">
-          <p class="eyebrow">PEQUEÑAS COSAS QUE BRILLAN</p>
-          <h2 id="universeTitle">100 formas de<br /><em>hablarte de amor.</em></h2>
-          <p>Hay palabras que han sobrevivido siglos porque alguien, alguna vez, necesitó expresar lo que sentía. Hoy quiero compartir contigo algunas de ellas.</p>
-        </div>
-        <div class="chapter-grid" id="chapterGrid" aria-label="Capítulos del universo poético"></div>
-        <div class="chapter-message" id="chapterMessage" aria-live="polite">
-          <span>♥</span><p>Elige un corazón para encender una parte del universo.</p>
-        </div>
-      </section>
-
-      <section class="reader-section" id="poemas" aria-labelledby="readerTitle" hidden>
-        <div class="section-marker"><span id="readerChapterNumber">01</span><i></i><p id="readerChapterTitle">LECTURA</p></div>
-        <article class="poem-reader" id="poemReader" aria-live="polite">
-          <div class="reader-topline">
-            <span class="poem-counter" id="poemCounter">Poema 01 de 100</span>
-            <button class="favorite-button" id="favoriteButton" type="button" aria-pressed="false" aria-label="Guardar en favoritos"><span aria-hidden="true">♡</span> Guardar</button>
-          </div>
-          <div class="reader-title-row">
-            <div>
-              <p class="eyebrow" id="poemLanguage">ENGLISH · ORIGINAL</p>
-              <h2 id="readerTitle">Soneto I</h2>
-              <p class="poem-author" id="poemAuthor">William Shakespeare</p>
-            </div>
-            <a id="poemSource" class="source-link" href="https://www.gutenberg.org/ebooks/1041" target="_blank" rel="noreferrer">Ver fuente ↗</a>
-          </div>
-          <div class="reading-progress"><span id="readingProgress"></span></div>
-          <p class="poem-text" id="poemText"></p>
-          <div class="reader-controls">
-            <button class="reader-nav" id="previousPoem" type="button"><span aria-hidden="true">←</span> Anterior</button>
-            <button class="surprise-button" id="surpriseButton" type="button">♥ Sorpréndeme con un poema</button>
-            <button class="reader-nav" id="nextPoem" type="button">Siguiente <span aria-hidden="true">→</span></button>
-          </div>
-        </article>
-      </section>
-
-      <section class="favorites-section" id="favoritos" aria-labelledby="favoritesTitle" hidden>
-        <div class="section-marker"><span>♥</span><i></i><p>MIS FAVORITOS</p></div>
-        <h2 id="favoritesTitle">Poemas que<br /><em>guardaste.</em></h2>
-        <div class="favorites-list" id="favoritesList"></div>
-      </section>
-
-      <section class="final-section reveal" aria-labelledby="finalTitle">
-        <div class="final-ring" aria-hidden="true"><span>♥</span></div>
-        <p class="eyebrow">UNA COSA MÁS</p>
-        <h2 id="finalTitle">Ojalá esto te saque<br /><em>una sonrisita.</em></h2>
-        <p>Y si no, al menos que te recuerde que alguien pensó en hacerte un lugar bonito.</p>
-        <button class="button button-primary" id="replayButton" type="button">Volver a encender las luces <span aria-hidden="true">✦</span></button>
-      </section>
+    <div class="ambient" aria-hidden="true"><div class="stars" id="stars"></div><div class="particles" id="particles"></div><div class="halo halo-one"></div><div class="halo halo-two"></div></div>
+    <section class="intro scene" id="intro" aria-labelledby="introTitle">
+      <div class="intro-heart heart-drawing" aria-hidden="true"><svg viewBox="0 0 100 92"><path pathLength="100" d="M50 84 C43 77,8 55,8 29 C8 12,29 7,40 20 L50 31 L60 20 C71 7,92 12,92 29 C92 55,57 77,50 84 Z" /></svg></div>
+      <div class="intro-copy"><p class="kicker">UN DETALLE PARA TI</p><h1 id="introTitle">Yamileth</h1><p>Hice un pequeño universo para ti. Quiero que descubras lo que guarda.</p><button class="primary-button" id="enterButton" type="button">Entrar a mi pequeño universo <span aria-hidden="true">↗</span></button></div>
+    </section>
+    <main id="app" hidden>
+      <header class="site-header"><button class="brand" id="homeButton" type="button" aria-label="Volver al inicio">Y<span>♥</span></button><p>UN UNIVERSO PARA YAMI</p><button class="quiet-button" id="backButton" type="button" hidden>← Volver</button></header>
+      <section class="home scene" id="home" aria-labelledby="homeTitle"><div class="home-intro reveal"><p class="kicker">PARA EXPLORAR SIN PRISA</p><h1 id="homeTitle">Un universo<br /><em>hecho para ti.</em></h1><p>Pequeños detalles, palabras sinceras y sorpresas que preparé pensando en ti. Explora a tu ritmo y descubre lo que hay detrás de cada luz.</p></div><div class="experience-grid" id="experienceGrid"></div></section>
+      <section class="experience-view scene" id="experience" hidden aria-live="polite"><div class="view-heading"><p class="kicker" id="viewKicker">01 · PARA TI</p><h2 id="viewTitle"></h2><p id="viewLead"></p></div><div id="viewContent"></div></section>
+      <section class="final-scene scene" id="finalScene" hidden aria-labelledby="finalTitle"><div class="final-intro"><p class="kicker">UN ÚLTIMO DETALLE</p><h2 id="finalTitle">Cien formas de<br /><em>decirlo.</em></h2></div><div class="love-heart" id="loveHeart" aria-label="Un corazón formado por cien expresiones de amor"><svg class="final-outline" viewBox="0 0 100 92" aria-hidden="true"><path pathLength="100" d="M50 84 C43 77,8 55,8 29 C8 12,29 7,40 20 L50 31 L60 20 C71 7,92 12,92 29 C92 55,57 77,50 84 Z" /></svg><div class="love-words" id="loveWords"></div><strong>TE AMO</strong></div><div class="final-actions"><button class="quiet-button" id="completeHeart" type="button">Ver corazón completo</button><div id="finalMessage" hidden><p>Cien formas de escribirlo. Un solo mensaje para ti.</p><p>Te amo, Yami.</p><button class="primary-button" id="returnHome" type="button">Volver a mi pequeño universo</button></div></div></section>
     </main>
-
-    <audio id="ambientAudio" loop preload="metadata"></audio>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="poems.js"></script>
-    <script src="script.js"></script>
+    <script src="data.js"></script><script src="script.js"></script>
   </body>
 </html>
 
