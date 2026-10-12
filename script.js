@@ -1,234 +1,140 @@
-// ── Personaliza la música aquí cuando agregues un archivo autorizado a assets/audio/ ──
-// Ejemplo: { title: "Piano para Yamileth", artist: "Tu artista autorizado", src: "assets/audio/tu-pista.mp3" }
-// Mantén la lista vacía hasta que el archivo exista: así nunca se muestra una pista rota.
-const playlist = [];
-
-const chapters = [
-  ["01", "Cuando nuestros caminos se encontraron", "encuentros", "✦", "rgba(193, 144, 248, .23)", "#d9a3ff"],
-  ["02", "Las conversaciones que nos acercaron", "complicidad", "✧", "rgba(248, 164, 113, .20)", "#ffd0a4"],
-  ["03", "Descubrirte poco a poco", "admiración", "☾", "rgba(116, 181, 255, .2)", "#b7dcff"],
-  ["04", "La ternura de las pequeñas cosas", "ternura", "♥", "rgba(255, 130, 188, .23)", "#ffb8d7"],
-  ["05", "Todo lo que me hace admirarte", "gratitud", "✦", "rgba(255, 197, 101, .20)", "#ffe09c"],
-  ["06", "Aunque todavía haya momentos por vivir", "ilusión", "↗", "rgba(130, 218, 212, .19)", "#acebe5"],
-  ["07", "Nuestro pequeño universo", "alegría", "☀", "rgba(255, 175, 103, .20)", "#ffd3a1"],
-  ["08", "Elegirte desde la libertad", "confianza", "∞", "rgba(151, 154, 255, .20)", "#c3c4ff"],
-  ["09", "El amor que permanece", "cariño", "♥", "rgba(246, 105, 146, .20)", "#ffb0c8"],
-  ["10", "Todas las páginas que todavía nos quedan", "esperanza", "✧", "rgba(255, 213, 137, .20)", "#ffe5a6"],
-];
-
 const $ = (selector) => document.querySelector(selector);
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const stars = $("#stars");
-const hearts = $("#floatingHearts");
-const audio = $("#ambientAudio");
 const toast = $("#toast");
 let toastTimer;
+let currentFeeling = 0;
+let heartTimers = [];
 
-function makeSky() {
-  const starCount = reducedMotion ? 25 : 60;
-  const heartCount = reducedMotion ? 4 : 12;
-  for (let i = 0; i < starCount; i += 1) {
-    const star = document.createElement("span");
-    star.className = "star";
-    star.style.left = `${Math.random() * 100}%`;
-    star.style.top = `${Math.random() * 100}%`;
-    star.style.opacity = (Math.random() * .7 + .15).toFixed(2);
-    star.style.setProperty("--duration", `${2 + Math.random() * 4}s`);
-    stars.append(star);
-  }
-  for (let i = 0; i < heartCount; i += 1) addBackgroundHeart(true);
-}
+const experiences = [
+  { id: "notes", number: "01", title: "Pequeñas cosas que quiero que sepas", description: "Doce lucecitas para descubrir.", tint: "rgba(255,72,139,.26)", accent: "#ff95bd" },
+  { id: "feelings", number: "02", title: "Lo que me haces sentir", description: "Diez mensajes, uno a la vez.", tint: "rgba(156,104,255,.2)", accent: "#c6a5ff" },
+  { id: "universe", number: "03", title: "Nuestro pequeño universo", description: "Diez sorpresas entre las estrellas.", tint: "rgba(255,112,91,.2)", accent: "#ffc09d" },
+  { id: "letter", number: "04", title: "Una carta para ti", description: "Para leer con calma.", tint: "rgba(233,55,114,.25)", accent: "#ff9abc" },
+];
 
-function addBackgroundHeart(initial = false) {
-  const heart = document.createElement("span");
-  heart.className = "bg-heart";
-  heart.textContent = Math.random() > .45 ? "♥" : "✦";
-  heart.style.left = `${Math.random() * 100}%`;
-  heart.style.fontSize = `${.6 + Math.random() * 1.1}rem`;
-  heart.style.setProperty("--duration", `${9 + Math.random() * 12}s`);
-  heart.style.setProperty("--drift", `${-50 + Math.random() * 100}px`);
-  heart.style.animationDelay = initial ? `${-Math.random() * 18}s` : "0s";
-  hearts.append(heart);
-  if (!initial) window.setTimeout(() => heart.remove(), 21000);
+function heartSvg(className = "") {
+  return `<svg class="${className}" viewBox="0 0 100 92" aria-hidden="true"><path pathLength="100" d="M50 84 C43 77,8 55,8 29 C8 12,29 7,40 20 L50 31 L60 20 C71 7,92 12,92 29 C92 55,57 77,50 84 Z" /></svg>`;
 }
 
 function showToast(message) {
   toast.textContent = message;
-  toast.classList.add("is-visible");
-  window.clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => toast.classList.remove("is-visible"), 3200);
+  toast.classList.add("is-showing");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("is-showing"), 2500);
 }
 
-let currentIndex = 0;
-let surpriseHistory = [];
-let favorites = new Set();
-try { favorites = new Set(JSON.parse(localStorage.getItem("yamileth-favorites") || "[]")); } catch { /* localStorage may be unavailable */ }
-
-function saveFavorites() {
-  try { localStorage.setItem("yamileth-favorites", JSON.stringify([...favorites])); } catch { /* the page still works for this visit */ }
+function makeAtmosphere() {
+  const stars = $("#stars"); const particles = $("#particles");
+  const amount = reducedMotion ? 26 : 64;
+  for (let i = 0; i < amount; i += 1) {
+    const star = document.createElement("i"); star.className = "star";
+    star.style.left = `${Math.random() * 100}%`; star.style.top = `${Math.random() * 100}%`;
+    star.style.setProperty("--d", `${2 + Math.random() * 4}s`); star.style.setProperty("--o", `${.18 + Math.random() * .72}`);
+    stars.append(star);
+  }
+  for (let i = 0; i < (reducedMotion ? 4 : 13); i += 1) {
+    const dot = document.createElement("span"); dot.className = "particle"; dot.textContent = i % 3 ? "✦" : "♥";
+    dot.style.left = `${Math.random() * 100}%`; dot.style.fontSize = `${.45 + Math.random() * .8}rem`;
+    dot.style.setProperty("--d", `${10 + Math.random() * 11}s`); dot.style.setProperty("--drift", `${-50 + Math.random() * 100}px`);
+    dot.style.animationDelay = `${-Math.random() * 18}s`; particles.append(dot);
+  }
 }
 
-function renderFavorites() {
-  const section = $("#favoritos");
-  const list = $("#favoritesList");
-  list.innerHTML = "";
-  if (!favorites.size) { section.hidden = true; return; }
-  section.hidden = false;
-  [...favorites].sort((a, b) => a - b).forEach((id) => {
-    const poem = poems.find((item) => item.id === id);
-    if (!poem) return;
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "favorite-item";
-    button.innerHTML = `<span>♥</span><b>${poem.title}</b><small>${poem.author}</small>`;
-    button.addEventListener("click", () => openPoem(poem.id - 1));
-    list.append(button);
+function showHome() {
+  clearHeartTimers();
+  $("#home").hidden = false; $("#experience").hidden = true; $("#finalScene").hidden = true;
+  $("#backButton").hidden = true;
+  window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+}
+
+function showExperience(type) {
+  clearHeartTimers();
+  const item = experiences.find((experience) => experience.id === type);
+  $("#home").hidden = true; $("#finalScene").hidden = true; $("#experience").hidden = false; $("#backButton").hidden = false;
+  $("#viewKicker").textContent = `${item.number} · PARA YAMI`; $("#viewTitle").textContent = item.title; $("#viewLead").textContent = item.description;
+  const content = $("#viewContent"); content.innerHTML = "";
+  if (type === "notes") renderNotes(content);
+  if (type === "feelings") renderFeelings(content);
+  if (type === "universe") renderUniverse(content);
+  if (type === "letter") renderLetter(content);
+  window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+}
+
+function renderHome() {
+  const grid = $("#experienceGrid");
+  experiences.forEach((item) => {
+    const button = document.createElement("button"); button.type = "button"; button.className = "experience-card";
+    button.style.setProperty("--tint", item.tint); button.style.setProperty("--accent", item.accent);
+    button.innerHTML = `<span>${item.number}</span><div class="card-heart">${heartSvg("")}</div><h3>${item.title}</h3><p>${item.description}</p>`;
+    button.addEventListener("click", () => showExperience(item.id)); grid.append(button);
   });
 }
 
-function renderPoem() {
-  const poem = poems[currentIndex];
-  const chapter = String(poem.chapter).padStart(2, "0");
-  $("#readerChapterNumber").textContent = chapter;
-  $("#readerChapterTitle").textContent = poem.chapterTitle.toUpperCase();
-  $("#poemCounter").textContent = `Poema ${String(poem.id).padStart(2, "0")} de ${poems.length}`;
-  $("#poemLanguage").textContent = poem.language.toUpperCase();
-  $("#readerTitle").textContent = poem.title;
-  $("#poemAuthor").textContent = poem.author;
-  $("#poemText").textContent = poem.text;
-  $("#poemSource").href = poem.source;
-  $("#readingProgress").style.width = `${((poem.id / poems.length) * 100).toFixed(1)}%`;
-  const saved = favorites.has(poem.id);
-  const favoriteButton = $("#favoriteButton");
-  favoriteButton.setAttribute("aria-pressed", String(saved));
-  favoriteButton.innerHTML = `<span aria-hidden="true">${saved ? "♥" : "♡"}</span> ${saved ? "Guardado" : "Guardar"}`;
-  $("#previousPoem").disabled = currentIndex === 0;
-  $("#nextPoem").disabled = currentIndex === poems.length - 1;
-  const reader = $("#poemReader");
-  reader.classList.remove("is-changing");
-  void reader.offsetWidth;
-  reader.classList.add("is-changing");
-}
-
-function openPoem(index, shouldScroll = true) {
-  currentIndex = Math.max(0, Math.min(index, poems.length - 1));
-  $("#poemas").hidden = false;
-  renderPoem();
-  if (shouldScroll) $("#poemas").scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
-}
-
-function surprisePoem() {
-  const choices = poems.map((_, index) => index).filter((index) => index !== currentIndex && !surpriseHistory.includes(index));
-  const next = choices[Math.floor(Math.random() * choices.length)] ?? (currentIndex + 1) % poems.length;
-  surpriseHistory = [...surpriseHistory, next].slice(-5);
-  addBackgroundHeart();
-  openPoem(next, false);
-  showToast(`El universo eligió el ${poems[next].title}.`);
-}
-
-function buildChapters() {
-  const grid = $("#chapterGrid");
-  chapters.forEach(([number, title, theme, icon, tint, glow]) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "chapter-card";
-    button.style.setProperty("--chapter-tint", tint);
-    button.style.setProperty("--chapter-glow", glow);
-    button.style.setProperty("--chapter-shadow", `${glow}26`);
-    button.innerHTML = `<span class="chapter-number">CAPÍTULO ${number}</span><span class="chapter-icon" aria-hidden="true">${icon}</span><h3>${title}</h3><span class="chapter-sub">${theme}</span>`;
-    button.addEventListener("click", () => {
-      $("#chapterMessage").innerHTML = `<span aria-hidden="true">${icon}</span><p><strong>Capítulo ${number}:</strong> ${title}. Abriendo su primer soneto.</p>`;
-      button.animate([{ transform: "scale(1)" }, { transform: "scale(.97)" }, { transform: "scale(1)" }], { duration: 280, easing: "cubic-bezier(.16, 1, .3, 1)" });
-      addBackgroundHeart();
-      openPoem((Number(number) - 1) * 10);
-    });
-    grid.append(button);
+function renderNotes(target) {
+  const grid = document.createElement("div"); grid.className = "note-grid";
+  smallNotes.forEach((note) => {
+    const card = document.createElement("button"); card.type = "button"; card.className = "note-card";
+    card.innerHTML = `<span class="mini-heart">${heartSvg("")}</span><div><b>${note.title}</b><p>${note.text}</p></div>`;
+    card.addEventListener("click", () => card.classList.toggle("is-open")); grid.append(card);
   });
+  target.append(grid);
+  const wrap = document.createElement("div"); wrap.className = "continue-wrap"; wrap.innerHTML = `<button class="primary-button" type="button">Seguir descubriendo <span aria-hidden="true">↗</span></button>`;
+  wrap.querySelector("button").addEventListener("click", showHome); target.append(wrap);
 }
 
-async function startMusic() {
-  if (!playlist.length) return false;
-  const track = playlist[0];
-  if (audio.dataset.track !== track.src) {
-    audio.src = track.src;
-    audio.dataset.track = track.src;
-    audio.volume = .16;
-  }
-  try {
-    await audio.play();
-    $("#soundControl").hidden = false;
-    $("#soundButton").textContent = "Ⅱ";
-    $("#soundButton").setAttribute("aria-label", "Pausar música");
-    return true;
-  } catch (error) {
-    return false;
-  }
+function renderFeelings(target) {
+  const player = document.createElement("div"); player.className = "feelings-player";
+  player.innerHTML = `<div class="feeling-heart">${heartSvg("")}</div><span class="feeling-count"></span><p class="feeling-text"></p><div class="player-nav"><button type="button" aria-label="Mensaje anterior">←</button><button class="quiet-button" type="button">Quiero ver qué más hay</button><button type="button" aria-label="Mensaje siguiente">→</button></div>`;
+  const paint = () => { player.querySelector(".feeling-count").textContent = `${String(currentFeeling + 1).padStart(2, "0")} / ${String(feelings.length).padStart(2, "0")}`; player.querySelector(".feeling-text").textContent = feelings[currentFeeling].text; player.querySelectorAll(".player-nav button")[0].disabled = currentFeeling === 0; player.querySelectorAll(".player-nav button")[2].disabled = currentFeeling === feelings.length - 1; const heart = player.querySelector(".feeling-heart"); heart.innerHTML = heartSvg(""); };
+  player.querySelectorAll(".player-nav button")[0].addEventListener("click", () => { currentFeeling -= 1; paint(); });
+  player.querySelectorAll(".player-nav button")[2].addEventListener("click", () => { currentFeeling += 1; paint(); });
+  player.querySelector(".quiet-button").addEventListener("click", () => showExperience("universe")); paint(); target.append(player);
 }
 
-function setEntryCopy() {
-  if (playlist.length) {
-    $("#enterButton").innerHTML = `Entrar con música <span aria-hidden="true">♫</span>`;
-    $("#entryNote").textContent = "Piano suave · volumen bajo";
-  }
+function renderUniverse(target) {
+  const map = document.createElement("div"); map.className = "universe-map";
+  const locations = [[10,17],[36,9],[65,17],[82,38],[67,64],[42,73],[17,62],[8,39],[32,43],[57,39]];
+  const popup = document.createElement("div"); popup.className = "surprise-popup"; popup.innerHTML = `<h3>Elige un corazón</h3><p>Algunos detalles se descubren mejor poco a poco.</p>`;
+  surprises.forEach((surprise, index) => {
+    const node = document.createElement("button"); node.type = "button"; node.className = "surprise-node"; node.textContent = "♥"; node.style.left = `${locations[index][0]}%`; node.style.top = `${locations[index][1]}%`; node.setAttribute("aria-label", `Descubrir: ${surprise.title}`);
+    node.addEventListener("click", () => { popup.innerHTML = `<h3>${surprise.title}</h3><p>${surprise.text}</p><small>✦ ${surprise.effect}</small>`; node.animate([{transform:"scale(1)"},{transform:"scale(1.22)"},{transform:"scale(1)"}],{duration:420,easing:"cubic-bezier(.16,1,.3,1)"}); }); map.append(node);
+  }); map.append(popup); target.append(map);
+  const wrap=document.createElement("div");wrap.className="continue-wrap";wrap.innerHTML=`<button class="primary-button" type="button">Hay algo más para ti <span aria-hidden="true">↗</span></button>`;wrap.querySelector("button").addEventListener("click",()=>showExperience("letter"));target.append(wrap);
 }
 
-async function enterExperience() {
-  const page = $("#pageContent");
-  const entry = $("#entryScreen");
-  const musicStarted = await startMusic();
-  if (playlist.length && !musicStarted) showToast("Tu navegador pidió un toque para iniciar la música. Vuelve a tocar el botón de sonido cuando quieras.");
-  page.removeAttribute("aria-hidden");
-  page.classList.add("is-visible");
-  entry.classList.add("is-leaving");
-  window.setTimeout(() => entry.remove(), 550);
+function renderLetter(target) {
+  const stage = document.createElement("div"); stage.className = "envelope-stage";
+  stage.innerHTML = `<div class="envelope"><div class="envelope-copy"><p class="kicker">UN MOMENTO PARA LEER CON CALMA</p><h3>Una carta para ti</h3><p>Hay cosas que quiero decirte con calma, sin prisas y sin que se me olviden las palabras.</p><button class="primary-button" type="button">Abrir mi carta</button></div></div>`;
+  stage.querySelector("button").addEventListener("click", () => {
+    stage.innerHTML = `<article class="letter-paper"><h3>Carta de Iván para Yamileth</h3><p>${letterText}</p><div class="continue-wrap"><button class="primary-button" type="button">Hay un último detalle para ti <span aria-hidden="true">♥</span></button></div></article>`;
+    stage.querySelector("button").addEventListener("click", showFinal);
+  }); target.append(stage);
 }
 
-function setupAudioControls() {
-  $("#soundButton").addEventListener("click", async () => {
-    if (audio.paused) {
-      const started = await startMusic();
-      if (!started) showToast("No se pudo encontrar la pista. Revisa assets/audio/.");
-    } else {
-      audio.pause();
-      $("#soundButton").textContent = "♫";
-      $("#soundButton").setAttribute("aria-label", "Reproducir música");
+function clearHeartTimers() { heartTimers.forEach(clearTimeout); heartTimers = []; }
+function heartCoordinates() {
+  return [ [[18,34,3],[66,82,3]], [[7,45,6],[55,93,6]], [[6,94,14]], [[9,91,14]], [[13,87,12]], [[18,82,10]], [[22,78,10]], [[27,73,8]], [[32,68,6]], [[38,62,4]], [[44,56,2]], [[47,53,2]] ];
+}
+function placeLoveWords() {
+  const holder = $("#loveWords"); holder.innerHTML = ""; let item = 0;
+  const colors = ["#fff8fb", "#ffc1d7", "#ff83ae", "#f4c7ff"];
+  heartCoordinates().forEach((ranges, row) => ranges.forEach(([start, end, count]) => {
+    const step = (end - start) / count;
+    for (let column = 0; column < count; column += 1) {
+      const language = loveLanguages[item++]; const word = document.createElement("span"); word.className = "love-word"; word.textContent = language.phrase;
+      word.style.left = `${start + column * step}%`; word.style.top = `${6 + row * 7.1}%`; word.style.setProperty("--w", `${step * .98}%`); word.style.setProperty("--word", colors[(item + row) % colors.length]); word.setAttribute("aria-label", `${language.language}: ${language.phrase}`); word.title = language.language; holder.append(word);
     }
-  });
-  $("#muteButton").addEventListener("click", () => {
-    audio.muted = !audio.muted;
-    $("#muteButton").textContent = audio.muted ? "×" : "◌";
-    $("#muteButton").setAttribute("aria-label", audio.muted ? "Activar sonido" : "Silenciar música");
-  });
-  audio.addEventListener("error", () => showToast("No se encontró la pista configurada. La página sigue funcionando sin música."));
+  }));
 }
-
-function setupReveals() {
-  if (reducedMotion) {
-    document.querySelectorAll(".reveal").forEach((element) => element.classList.add("is-revealed"));
-    return;
-  }
-  const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
-    if (entry.isIntersecting) { entry.target.classList.add("is-revealed"); observer.unobserve(entry.target); }
-  }), { threshold: .13 });
-  document.querySelectorAll(".reveal").forEach((element) => observer.observe(element));
+function completeHeart() { clearHeartTimers(); document.querySelectorAll(".love-word").forEach((word) => word.classList.add("is-visible")); $("#completeHeart").hidden = true; $("#finalMessage").hidden = false; }
+function startHeart() {
+  placeLoveWords(); const heart = $("#loveHeart"); heart.classList.remove("is-active"); void heart.offsetWidth; heart.classList.add("is-active");
+  const words = [...document.querySelectorAll(".love-word")]; const reveal = () => words.forEach((word, index) => heartTimers.push(setTimeout(() => { word.classList.add("is-visible"); if (index === words.length - 1) completeHeart(); }, reducedMotion ? 0 : 1500 + index * 110)));
+  reveal();
 }
+function showFinal() { $("#home").hidden = true; $("#experience").hidden = true; $("#finalScene").hidden = false; $("#backButton").hidden = false; $("#completeHeart").hidden = false; $("#finalMessage").hidden = true; window.scrollTo({top:0,behavior:reducedMotion?"auto":"smooth"}); startHeart(); }
 
-makeSky();
-buildChapters();
-setEntryCopy();
-setupAudioControls();
-setupReveals();
-$("#enterButton").addEventListener("click", enterExperience);
-$("#sparkButton").addEventListener("click", () => { for (let i = 0; i < 8; i += 1) window.setTimeout(() => addBackgroundHeart(), i * 80); showToast("Unas lucecitas extra, solo porque sí."); });
-$("#replayButton").addEventListener("click", () => { for (let i = 0; i < 16; i += 1) window.setTimeout(() => addBackgroundHeart(), i * 55); showToast("El universo volvió a encenderse."); });
-$("#previousPoem").addEventListener("click", () => openPoem(currentIndex - 1, false));
-$("#nextPoem").addEventListener("click", () => openPoem(currentIndex + 1, false));
-$("#surpriseButton").addEventListener("click", surprisePoem);
-$("#favoriteButton").addEventListener("click", () => {
-  const id = poems[currentIndex].id;
-  if (favorites.has(id)) { favorites.delete(id); showToast("Se quitó de tus favoritos."); }
-  else { favorites.add(id); showToast("Guardado entre tus favoritos."); }
-  saveFavorites(); renderFavorites(); renderPoem();
-});
-renderFavorites();
+makeAtmosphere(); renderHome();
+$("#enterButton").addEventListener("click", () => { $("#intro").hidden = true; $("#app").hidden = false; showHome(); });
+$("#homeButton").addEventListener("click", showHome); $("#backButton").addEventListener("click", showHome); $("#completeHeart").addEventListener("click", completeHeart); $("#returnHome").addEventListener("click", showHome);
 
